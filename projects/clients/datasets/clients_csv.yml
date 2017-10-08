@@ -1,0 +1,8 @@
+datasets:
+# clients source file, which appears to be a simple csv file but in an old windows 1252 encoding
+  clients_csv:
+    connector: upload
+    table: clients.csv.gz
+    type: csv
+    sep: ";"
+    encoding: windows-1252

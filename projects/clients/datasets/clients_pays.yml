@@ -1,0 +1,7 @@
+datasets:
+  clients_pays:
+    connector: upload
+    table: clients_pays.csv
+    type: csv
+    sep: ","
+    encoding: utf-8

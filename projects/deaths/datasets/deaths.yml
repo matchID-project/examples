@@ -1,0 +1,42 @@
+datasets:
+  deaths:
+    connector: elasticsearch
+    table: deaths
+    body:
+      settings:
+        #index.store.type: mmapfs 
+        index:
+          refresh_interval: 30s
+          number_of_replicas: 0
+          analysis:
+            analyzer:
+              matchid_analyzer:
+                tokenizer: standard
+                filter:
+                  - standard
+                  - lowercase
+                  - matchid_phone
+            filter:
+              matchid_phone:
+                type: phonetic
+                encoder: doublemetaphone
+                replace: False  
+      mappings:
+        deaths:       
+          _all:
+            enabled: False
+          dynamic: False
+          properties:
+            matchid_id:
+              type: keyword
+            #above lines are useless if deaths not used for matching
+            matchid_name_match:
+              type: text
+            matchid_date_birth_str:
+              type: keyword
+            matchid_date_death_src:
+              type: keyword              
+            matchid_location_city:
+              type: keyword
+            matchid_location_country:
+              type: keyword

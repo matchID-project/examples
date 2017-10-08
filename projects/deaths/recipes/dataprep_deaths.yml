@@ -1,0 +1,49 @@
+recipes:
+  dataprep_deaths:
+    test_chunk_size: 1000
+    input: deaths_fwf
+    output: deaths
+    threads: 3
+    steps:
+      - eval:
+        #tag dataset and records with uniq id
+          - matchid_id: sha1(row)
+          - matchid_src: str("deaths")
+      - map:
+          #date
+          matchid_date_birth_src: DCD_DATE_NAISSANCE
+          matchid_date_death_src: DCD_DATE_DECES
+          #name
+          matchid_name_src: DCD_NOM_PRENOMS
+          matchid_name_last_src: DCD_NOM_PRENOMS
+          matchid_name_first_src: DCD_NOM_PRENOMS
+          #location
+          matchid_location_city_src: DCD_COMMUNE_NAISSANCE
+          matchid_location_citycode_src: DCD_CODE_INSEE_NAISSANCE
+          matchid_location_country_src: DCD_PAYS_NAISSANCE
+          matchid_location_citycode: DCD_CODE_INSEE_NAISSANCE
+          matchid_location_countrycode_src: DCD_CODE_INSEE_NAISSANCE
+          #sex
+          matchid_sex_src: DCD_SEXE
+          matchid_sex: DCD_SEXE
+      - keep: 
+          select: matchid_.*
+      #name
+      - replace:
+          select: matchid_name_last_src$
+          regex:
+            - ^(.*)\*.*/$: '\1'     
+      - replace:
+          select: matchid_name_first_src$
+          regex:
+            - ^.*\*(.*)/$: '\1'
+      - eval:
+          - matchid_name_first_src: matchid_name_first_src.split(" ")
+      - french_name_normalize:
+      - french_name_frequency:
+      
+      #location
+      - country_code_cog:
+      - french_citycode:
+      - algeria_city:
+      - ymd_date: # date

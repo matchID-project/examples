@@ -1,0 +1,28 @@
+datasets:
+  # death people reference (fake)
+  # fixed with format with no header
+  deaths_fwf:
+    connector: upload
+    table: deaths.txt.gz
+    encoding: latin1
+    type: fwf
+    widths: 
+      - 80
+      - 1
+      - 8
+      - 5
+      - 30
+      - 30
+      - 8
+      - 5
+      - 10
+    names: 
+      - DCD_NOM_PRENOMS
+      - DCD_SEXE
+      - DCD_DATE_NAISSANCE
+      - DCD_CODE_INSEE_NAISSANCE
+      - DCD_COMMUNE_NAISSANCE
+      - DCD_PAYS_NAISSANCE
+      - DCD_DATE_DECES
+      - DCD_CODE_INSEE_DECES
+      - DCD_NUM_DECES

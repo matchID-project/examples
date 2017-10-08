@@ -1,0 +1,6 @@
+datasets:
+  clients_x_deaths:
+    connector: elasticsearch
+    table: clients_x_deaths
+    validation: true
+

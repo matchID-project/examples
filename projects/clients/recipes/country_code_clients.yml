@@ -1,0 +1,19 @@
+recipes:
+  # specific country codes for clients file
+  country_code_clients:
+    input: clients_csv
+    steps:
+      - map:
+          matchid_location_depcode: matchid_location_depcode_src
+      - replace:
+          select: matchid_location_depcode$
+          regex:
+            - ^0: ''
+      - join: # country mapping (maps a specific code to the INSEE COG one)
+          type: in_memory
+          dataset: clients_pays
+          strict: 
+            matchid_location_countrycode_src: COUNTRY_CODE
+          select: 
+            matchid_location_country:  LIBCOG
+            matchid_location_countrycode: CODEISO3

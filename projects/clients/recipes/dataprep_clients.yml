@@ -1,0 +1,38 @@
+recipes:
+############################################
+#  dataprepartion steps for clients file   #
+############################################
+  dataprep_clients:
+    test_chunk_size: 1000
+    input:
+      dataset: clients_csv
+    steps:
+      - replace: #remove trailing blank spaces
+          select: .*
+          regex:
+            - \s*$: ''     
+      - eval: #tag the dataset
+          - matchid_src: str("clients")
+      - map:
+          #mappings id, name, sex, date and location
+          matchid_id: Identifiant
+          matchid_name_last_src:
+            - Nom
+            - Nom épouse
+            - Nom d’usage
+          matchid_name_first_src: Prénom
+          matchid_sex_src: Code sexe
+          matchid_date_birth_src: Date de naissance
+          matchid_location_city_src: Lieu de naissance
+          matchid_location_depcode_src: Département de naissance
+          matchid_location_countrycode_src: Pays de naissance
+      - eval:
+        - matchid_sex: int(row['matchid_sex_src'])+1
+      - keep: 
+          select: matchid_.*
+      - french_name_normalize:
+      - french_name_frequency:      
+      - ymd_date:
+      - country_code_clients:
+      - french_city+dep:
+      - algeria_city:

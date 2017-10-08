@@ -1,0 +1,13 @@
+recipes:
+  clients_deaths_matching:
+    threads: 3
+    input: clients_csv
+    output: clients_x_deaths
+    steps:
+      - dataprep_clients:
+      - deaths_matching:
+      - diff:
+      - keep:
+          select: .*
+          where: matchid_hit_score>0.2
+

@@ -1,0 +1,60 @@
+recipes:
+  deaths_matching:
+    steps:
+      - join: 
+          type: elasticsearch
+          dataset: deaths
+          prefix: hit_
+          #keep_unmatched: True
+          query:
+            size: 40
+            query:
+              bool:
+                must:
+                  - bool:
+                      should:
+                        - bool:
+                            must:
+                              - match:
+                                  matchid_name_match:
+                                    query: matchid_name_last_match
+                                    fuzziness: auto
+                              - match:
+                                  matchid_date_birth_str: matchid_date_birth_str
+                        - bool:
+                            must:
+                              - match:
+                                  matchid_name_match: matchid_name_last_match
+                              - match:
+                                  matchid_date_birth_str: 
+                                    query: matchid_date_birth_str
+                                    fuzziness: 1
+                      minimum_should_match: 1
+                should:
+                  - bool:
+                      should:
+                        - span_first:
+                            match:
+                              span_term:
+                                  matchid_name_match: matchid_name_last_match
+                            end: 1
+                        - match:
+                            matchid_name_match: matchid_name_first_match
+                        - match:
+                            matchid_location_city: matchid_location_city
+                        - match:
+                            matchid_location_country: matchid_location_country
+                      minimum_should_match: 2
+      - rename:
+          hit_matchid_hit_number: total
+          hit_matchid_score_es_max: max_score
+      - keep:
+          select: .*
+          where: hit_matchid_score_es_max > 20
+      - scoring:
+      - eval:
+          - confiance: round(100*matchid_hit_score)
+      #- diff: # optionnal diff method which display difference with hits
+      #- keep:
+      #    select: .*(diff.*|confiance|score_name|score_location|score_sex|score_date|hit_distance)$
+      #    where: confiance>10
