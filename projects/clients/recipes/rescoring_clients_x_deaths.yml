@@ -1,0 +1,22 @@
+recipes:
+  rescoring_clients_x_deaths:
+    input: clients_x_deaths
+    output: 
+      dataset: clients_x_deaths
+      mode: update
+    steps:
+      - apply_model:
+          name: clients_deaths_ml
+          numerical: .*(hit_score_.*|population|surface|matchid_hit_distance)$
+          target: matchid_hit_score_ml
+      - eval:
+          - confiance: >
+              try:
+                cell = round(0.7*float(matchid_hit_score_ml)+30*float(matchid_hit_score))
+              except:
+                try:
+                  cell = matchid_hit_score_ml
+                except:
+                  cell = matchid_hit_score
+          - scoring_version: str("{}-randomforest-{}").format(re.sub("-.*","",scoring_version),str(datetime.datetime.now()))
+    
