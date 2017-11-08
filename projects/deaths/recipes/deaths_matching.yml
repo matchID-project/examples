@@ -50,8 +50,26 @@ recipes:
           hit_matchid_score_es_max: max_score
       - keep:
           select: .*
-          where: hit_matchid_score_es_max > 20
+          where: hit_matchid_score_es_max >  min(max(hit_matchid_hit_number,15),30)     
       - scoring:
+      - keep:
+          select: .*
+          where: confiance > 20
+      # group aggregations for multimatching    
+      - groupby:
+          select: matchid_id
+          transform:
+            - hit_matchid_id: count
+            - matchid_hit_score: max
+      - groupby:
+          select: matchid_id            
+          rank:
+            - matchid_hit_score
+      # filtering of multimatch (filter highly confusing names)
+      - keep:
+          select: .*
+          where: (matchid_hit_score_rank == 1) | (matchid_hit_score > min(0.5,matchid_hit_score_max-0.2))       
+      
       - eval:
           - confiance: round(100*matchid_hit_score)
       #- diff: # optionnal diff method which display difference with hits
