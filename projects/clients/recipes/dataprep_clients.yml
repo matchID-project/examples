@@ -3,7 +3,7 @@ recipes:
 #  dataprepartion steps for clients file   #
 ############################################
   dataprep_clients:
-    test_chunk_size: 1000
+    test_chunk_size: 100
     input:
       dataset: clients_csv
     steps:

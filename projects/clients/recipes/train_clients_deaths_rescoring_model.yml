@@ -22,7 +22,7 @@ recipes:
               min_samples_leaf: 5
             tries: 3
             test_size: 0.33
-          numerical: .*(hit_score_.*|population|surface|matchid_hit_distance)$
+          numerical: .*(hit_score_(?!ml).*|population|surface|matchid_hit_distance)$
           #categorical: .*(matchid_location_countrycode)$
           target: validation_decision
  
