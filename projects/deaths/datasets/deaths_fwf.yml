@@ -1,5 +1,5 @@
 datasets:
-  # death people reference (fake)
+  # death people reference (fake - test sample)
   # fixed with format with no header
   deaths_fwf:
     connector: upload
