@@ -17,3 +17,11 @@ recipes:
           select: 
             matchid_location_country:  LIBCOG
             matchid_location_countrycode: CODEISO3
+      - join:
+          type: in_memory
+          dataset: countries
+          strict:
+            matchid_location_countrycode: CODEISO3
+          select:
+            matchid_location_country_latitude: latitude
+            matchid_location_country_longitude: longitude
