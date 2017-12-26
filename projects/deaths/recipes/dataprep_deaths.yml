@@ -1,6 +1,6 @@
 recipes:
   dataprep_deaths:
-    test_chunk_size: 1000
+    test_chunk_size: 100
     input: deaths_fwf
     output: deaths
     threads: 3
