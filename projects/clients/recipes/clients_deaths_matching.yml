@@ -9,9 +9,7 @@ recipes:
       - dataprep_clients:
       - deaths_matching:
       - diff:
-      - keep:
-          select: .*
-          where: matchid_hit_score>0.2
       - rescoring_clients_x_deaths:
 
+          
 
