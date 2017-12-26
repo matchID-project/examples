@@ -1,6 +1,8 @@
 recipes:
   clients_deaths_matching:
-    threads: 3
+    apply: true
+    threads: 1
+    test_chunk_size: 50
     input: clients_csv
     output: clients_x_deaths
     steps:
