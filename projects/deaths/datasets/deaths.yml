@@ -2,6 +2,11 @@ datasets:
   deaths:
     connector: elasticsearch
     table: deaths
+    #chunk: 500
+    #timeout: 30
+    #thread_count: 1
+    #safe: False
+    #max_tries: 1
     body:
       settings:
         #index.store.type: mmapfs 
