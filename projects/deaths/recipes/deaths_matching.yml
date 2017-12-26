@@ -46,11 +46,12 @@ recipes:
                             matchid_location_country: matchid_location_country
                       minimum_should_match: 2
       - rename:
-          hit_matchid_hit_number: total
-          hit_matchid_score_es_max: max_score
+          hit_matchid_hit_number: hit_total
+          hit_matchid_score_es_max: hit_max_score
+          hit_matchid_score_es: hit_score
       - keep:
           select: .*
-          where: hit_matchid_score_es_max >  min(max(hit_matchid_hit_number,15),30)     
+          where: hit_matchid_score_es >  min(max(hit_matchid_hit_number,15),30)     
       - scoring:
       - keep:
           select: .*
@@ -68,7 +69,7 @@ recipes:
       # filtering of multimatch (filter highly confusing names)
       - keep:
           select: .*
-          where: (matchid_hit_score_rank == 1) | (matchid_hit_score > min(0.5,matchid_hit_score_max-0.2))       
+          where: (matchid_hit_score_rank == 1) | (matchid_hit_score > min(0.5,matchid_hit_score_max-1))       
       
       - eval:
           - confiance: round(100*matchid_hit_score)
