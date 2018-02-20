@@ -1,5 +1,6 @@
 recipes:
   deaths_matching:
+    input: deaths
     steps:
       - join: 
           type: elasticsearch
