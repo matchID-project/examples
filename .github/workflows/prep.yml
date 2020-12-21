@@ -1,0 +1,13 @@
+name: Build data
+
+on: [push]
+
+jobs:
+  build:
+    name: Docker image build CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Config
+        run: make config
