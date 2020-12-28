@@ -12,4 +12,4 @@ jobs:
       - name: Config
         run: make config
       - name: Recipe run
-        run: make recipe-run watch-run
+        run: make recipe-run watch-run backup

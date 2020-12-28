@@ -1,5 +1,7 @@
 SHELL=/bin/bash
 
+
+export DATAPREP_VERSION := $(shell cat projects/deaths/recipes/dataprep_deaths.yml | sha1sum | awk '{print $1}' | cut -c-8)
 export PWD := $(shell pwd)
 export APP_PATH=${PWD}
 export GIT = $(shell which git)
@@ -13,6 +15,9 @@ export ES_THREADS = 2
 export RECIPE = dataprep_deaths
 export RECIPE_THREADS = 2
 export RECIPE_QUEUE = 1
+
+export DATA_TAG=deaths
+export BACKUP_DIR = ${PWD}/${GIT_BACKEND}/backup
 
 dummy               := $(shell touch artifacts)
 include ./artifacts
@@ -28,6 +33,9 @@ ${GIT_BACKEND}:
 	@sed -i -E "s/export API_SECRET_KEY:=(.*)/export API_SECRET_KEY:=1234/"  backend/Makefile
 	@sed -i -E "s/export ADMIN_PASSWORD:=(.*)/export ADMIN_PASSWORD:=1234ABC/"  backend/Makefile
 	@sed -i -E "s/id(.*):=(.*)/id:=myid/"  backend/Makefile
+
+backup-dir:
+	mkdir -p ${BACKUP_DIR}
 
 config: ${GIT_BACKEND}
 	@echo checking system prerequisites
@@ -62,3 +70,16 @@ watch-run:
 	@LOG_FILE=$(shell find ${GIT_BACKEND}/log/ -iname '*${RECIPE}*' | sort | tail -1);\
 	((egrep -i 'end : run|Ooops' $$LOG_FILE | tail -5) && exit 1) || \
 	egrep 'end : run.*successfully' $$LOG_FILE
+
+backup: backup-dir
+	@if [ ! -f backup ];then\
+		ES_BACKUP_FILE=esdata_${DATAPREP_VERSION}_$$(cat ${DATA_TAG}).tar;\
+		ES_BACKUP_FILE_SNAR=esdata_${DATAPREP_VERSION}_$$(cat ${DATA_TAG}).snar;\
+		if [ ! -f "${BACKUP_DIR}/$$ES_BACKUP_FILE" ];then\
+			${MAKE} -C ${APP_PATH}/${GIT_BACKEND} elasticsearch-backup \
+				ES_BACKUP_FILE=$$ES_BACKUP_FILE\
+				ES_BACKUP_FILE_SNAR=$$ES_BACKUP_FILE_SNAR;\
+		fi;\
+		touch backup;\
+	fi
+
