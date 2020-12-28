@@ -6,6 +6,13 @@ export GIT = $(shell which git)
 export GITROOT = https://github.com/matchid-project
 export GIT_BACKEND = backend
 export ES_NODES=1
+export ES_MEM=1024m
+export ES_PRELOAD=[]
+export ES_THREADS = 2
+
+export RECIPE = dataprep_deaths
+export RECIPE_THREADS = 2
+export RECIPE_QUEUE = 1
 
 dummy               := $(shell touch artifacts)
 include ./artifacts
@@ -27,3 +34,16 @@ config: ${GIT_BACKEND}
 	@${MAKE} -C ${APP_PATH}/${GIT_BACKEND} config && \
 	echo "prerequisites installed" > config
 
+recipe-run:
+	@if [ ! -f recipe-run ];then\
+		${MAKE} -C ${APP_PATH}/${GIT_BACKEND} elasticsearch ES_NODES=${ES_NODES} ES_MEM=${ES_MEM} ${MAKEOVERRIDES};\
+		echo running recipe on full data;\
+		${MAKE} -C ${APP_PATH}/${GIT_BACKEND} recipe-run \
+			RECIPE=${RECIPE} RECIPE_THREADS=${RECIPE_THREADS} RECIPE_QUEUE=${RECIPE_QUEUE}\
+			ES_PRELOAD='${ES_PRELOAD}' ES_THREADS=${ES_THREADS} \
+			${MAKEOVERRIDES} \
+			APP=backend APP_VERSION=$(shell cd ${APP_PATH}/${GIT_BACKEND} && make version | awk '{print $$NF}') \
+			&&\
+		touch recipe-run &&\
+		(echo esdata_${DATAPREP_VERSION}_$$(cat ${DATA_TAG}).tar > elasticsearch-restore);\
+	fi

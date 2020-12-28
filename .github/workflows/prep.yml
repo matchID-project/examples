@@ -11,3 +11,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Config
         run: make config
+      - name: Recipe run
+        run: make recipe-run
