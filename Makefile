@@ -47,3 +47,18 @@ recipe-run:
 		touch recipe-run &&\
 		(echo esdata_${DATAPREP_VERSION}_$$(cat ${DATA_TAG}).tar > elasticsearch-restore);\
 	fi
+
+watch-run:
+	@LOG_FILE=$(shell find ${GIT_BACKEND}/log/ -iname '*${RECIPE}*' | sort | tail -1);\
+	timeout=${TIMEOUT} ; ret=1 ; \
+		until [ "$$timeout" -le 0 -o "$$ret" -eq "0"  ] ; do \
+			((tail $$LOG_FILE | grep "end of all" > /dev/null) || exit 1) ; \
+			ret=$$? ; \
+			if [ "$$ret" -ne "0" ] ; then \
+				grep inserted $$LOG_FILE |awk 'BEGIN{s=0}{t=$$4;s+=$$14}END{printf("\rwrote %d in %s",s,t)}' ;\
+				grep -i Ooops $$LOG_FILE | wc -l | awk '($$1>${ERR_MAX}){exit 1}' || exit 0;\
+				sleep 10 ;\
+			fi ; ((timeout--)); done ;
+	@LOG_FILE=$(shell find ${GIT_BACKEND}/log/ -iname '*${RECIPE}*' | sort | tail -1);\
+	((egrep -i 'end : run|Ooops' $$LOG_FILE | tail -5) && exit 1) || \
+	egrep 'end : run.*successfully' $$LOG_FILE
