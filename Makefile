@@ -16,7 +16,7 @@ export RECIPE = dataprep_deaths
 export RECIPE_THREADS = 2
 export RECIPE_QUEUE = 1
 
-export DATA_TAG=deaths
+export DATA_TAG=deaths # TODO: set data-tag
 export BACKUP_DIR = ${PWD}/${GIT_BACKEND}/backup
 
 dummy               := $(shell touch artifacts)
@@ -53,7 +53,7 @@ recipe-run:
 			APP=backend APP_VERSION=$(shell cd ${APP_PATH}/${GIT_BACKEND} && make version | awk '{print $$NF}') \
 			&&\
 		touch recipe-run &&\
-		(echo esdata_${DATAPREP_VERSION}_$$(cat ${DATA_TAG}).tar > elasticsearch-restore);\
+		(echo esdata_${DATAPREP_VERSION}_${DATA_TAG}.tar > elasticsearch-restore);\
 	fi
 
 watch-run:
@@ -73,7 +73,7 @@ watch-run:
 
 backup: backup-dir
 	@if [ ! -f backup ];then\
-		ES_BACKUP_FILE=esdata_${DATAPREP_VERSION}_$$(cat ${DATA_TAG}).tar;\
+		ES_BACKUP_FILE=esdata_${DATAPREP_VERSION}_${DATA_TAG}.tar;\
 		ES_BACKUP_FILE_SNAR=esdata_${DATAPREP_VERSION}_$$(cat ${DATA_TAG}).snar;\
 		if [ ! -f "${BACKUP_DIR}/$$ES_BACKUP_FILE" ];then\
 			${MAKE} -C ${APP_PATH}/${GIT_BACKEND} elasticsearch-backup \
