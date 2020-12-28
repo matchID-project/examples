@@ -17,7 +17,10 @@ ${GIT_BACKEND}:
 	@cp docker-compose-local.yml ${GIT_BACKEND}/docker-compose-local.yml
 	@echo "export ES_NODES=${ES_NODES}" >> ${GIT_BACKEND}/artifacts
 	@echo "export PROJECTS=${PWD}/projects" >> ${GIT_BACKEND}/artifacts
-	@sed -i -E "s/urandom/random/"  backend/Makefile
+	@sed -i -E "s/backend: network backend-docker-check/backend: network #backend-docker-check/"  backend/Makefile
+	@sed -i -E "s/export API_SECRET_KEY:=(.*)/export API_SECRET_KEY:=1234/"  backend/Makefile
+	@sed -i -E "s/export ADMIN_PASSWORD:=(.*)/export ADMIN_PASSWORD:=1234ABC/"  backend/Makefile
+	@sed -i -E "s/id(.*):=(.*)/id:=myid/"  backend/Makefile
 
 config: ${GIT_BACKEND}
 	@echo checking system prerequisites
